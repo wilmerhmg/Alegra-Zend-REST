@@ -19,10 +19,15 @@ class Translate {
 	 */
 	public static function toEng(&$Struct) {
 		$Translate = new Translate();
-		if (is_array($Struct))
+		if (!$Translate::is_assoc($Struct))
 			$Translate->fromListES($Struct);
 		else
 			$Translate->fromObjectES($Struct);
+	}
+
+	public static function errorToEng(&$Error) {
+		$Translate = new TRanslate();
+		$Translate->toTraslate($Error['message']);
 	}
 
 	/**
@@ -46,6 +51,7 @@ class Translate {
 		$this->toTraslate($Object['name']);
 
 		!empty($Object['description']) ? $this->toTraslate($Object['description']) : NULL;
+		!empty($Object['category']) ? $this->toTraslate($Object['category']['name']) : NULL;
 
 		foreach ($Object['price'] as $item => $value)
 			$Exch->toUSD($Object['price'][$item]['price']);
@@ -65,5 +71,9 @@ class Translate {
 		]);
 		$txt       = $IA_Result['text'];
 		return $IA_Result;
+	}
+
+	protected static function is_assoc($var) {
+		return is_array($var) && array_diff_key($var, array_keys(array_keys($var)));
 	}
 }

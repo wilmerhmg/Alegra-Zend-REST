@@ -13,7 +13,7 @@ return [
 	],
 	'router'       => [
 		'routes' => [
-			'album' => [
+			'item' => [
 				'type'    => Segment::class,
 				'options' => [
 					'route'       => '/item[/:action[/:id]]',
@@ -26,7 +26,7 @@ return [
 						'action'     => 'index',
 					],
 				],
-			],
+			]
 		],
 	],
 	'view_manager' => [
@@ -34,9 +34,6 @@ return [
 		'strategies'          => [
 			'ViewJsonStrategy',
 		],
-		/*'template_map'        => [
-			'layout/layout' => __DIR__ . '/../view/layout/layout.phtml'
-		],*/
 		'template_path_stack' => [
 			'item' => __DIR__ . '/../view',
 		],

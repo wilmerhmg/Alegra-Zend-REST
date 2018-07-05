@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: wito
- * Date: 4/07/18
- * Time: 22:52
- */
 
 namespace Item\Controller;
 
 use Couchbase\Exception;
 use Zend\Http\Client;
 use Zend\Http\Response;
-use Zend\Router\Http\Method;
 
 class Exchange {
 	const API_EXCHANGE      = 'https://openexchangerates.org/api/latest.json';
@@ -21,6 +14,10 @@ class Exchange {
 	private $response;
 	private $rates;
 
+	/**
+	 * Exchange constructor.
+	 * @throws Exception
+	 */
 	public function __construct() {
 
 		$this->latest = new Client();

@@ -1,4 +1,4 @@
-# ZendSkeletonApplication
+# AlegraZendApplication
 
 ## Introduction
 
