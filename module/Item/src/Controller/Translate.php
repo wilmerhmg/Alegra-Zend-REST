@@ -101,7 +101,7 @@ class Translate {
 		return $IA_Result;
 	}
 
-	protected static function is_assoc($var) {
+	public static function is_assoc($var) {
 		return is_array($var) && array_diff_key($var, array_keys(array_keys($var)));
 	}
 }
