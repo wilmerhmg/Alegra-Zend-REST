@@ -1,11 +1,11 @@
-# AlegraZendApplication
+#AlegraZendApplication
 
-## Introduction
+##Introduction
 
 This is a skeleton application using the Zend Framework MVC layer and module
 systems. This application is meant to be used as a starting place on Alegra.
 
-## Installation using Composer
+##Installation using Composer
 
 The easiest way to create a new Zend Framework project is to use
 [Composer](https://getcomposer.org/).  If you don't have it already installed,
@@ -32,7 +32,7 @@ interfaces. You can then visit the site at http://localhost:8080/
 
 **Note:** The built-in CLI server is *for development only*.
 
-## Development mode
+##Development mode
 
 The skeleton ships with [zf-development-mode](https://github.com/zfcampus/zf-development-mode)
 by default, and provides three aliases for consuming the script it ships with:
@@ -54,7 +54,7 @@ After making changes to one of the above-mentioned `.dist` configuration files y
 either need to disable then enable development mode for the changes to take effect,
 or manually make matching updates to the `.dist`-less copies of those files.
 
-## Running Unit Tests
+##Running Unit Tests
 
 To run the supplied skeleton unit tests, you need to do one of the following:
 
@@ -77,7 +77,7 @@ precedence over the former when running tests, and is ignored by version
 control. (If you want to make the modifications permanent, edit the
 `phpunit.xml.dist` file.)
 
-## Using Vagrant
+##Using Vagrant
 
 This skeleton includes a `Vagrantfile` based on ubuntu 16.04 (bento box)
 with configured Apache2 and PHP 7.0. Start it up using:
@@ -102,7 +102,7 @@ $ vagrant ssh -c 'composer update'
 While running, Vagrant maps your host port 8080 to port 80 on the virtual
 machine; you can visit the site at http://localhost:8080/
 
-> ### Vagrant and VirtualBox
+> ###Vagrant and VirtualBox
 >
 > The vagrant image is based on ubuntu/xenial64. If you are using VirtualBox as
 > a provider, you will need:
@@ -112,7 +112,7 @@ machine; you can visit the site at http://localhost:8080/
 
 For vagrant documentation, please refer to [vagrantup.com](https://www.vagrantup.com/)
 
-## Using docker-compose
+##Using docker-compose
 
 This skeleton provides a `docker-compose.yml` for use with
 [docker-compose](https://docs.docker.com/compose/); it
@@ -131,9 +131,9 @@ You can also run composer from the image. The container environment is named
 $ docker-compose run zf composer install
 ```
 
-## Web server setup
+##Web server setup
 
-### Apache setup
+###Apache setup
 
 To setup apache, setup a virtual host to point to the public/ directory of the
 project and you should be ready to go! It should look something like below:
@@ -154,7 +154,7 @@ project and you should be ready to go! It should look something like below:
 </VirtualHost>
 ```
 
-### Nginx setup
+###Nginx setup
 
 To setup nginx, open your `/path/to/nginx/nginx.conf` and add an
 [include directive](http://nginx.org/en/docs/ngx_core_module.html#include) below
@@ -193,7 +193,7 @@ server {
 
 Restart the nginx, now you should be ready to go!
 
-## QA Tools
+##QA Tools
 
 The skeleton does not come with any QA tooling by default, but does ship with
 configuration for each of:
