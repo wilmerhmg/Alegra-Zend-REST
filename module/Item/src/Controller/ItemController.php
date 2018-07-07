@@ -11,9 +11,11 @@ use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 
 class ItemController extends AbstractActionController {
-	const API_ALEGRA      = 'https://app.alegra.com/api/v1/items';
-	const API_ALEGRA_USER = 'wilmer@pulsejs.io';
-	const API_ALEGRA_KEY  = '52e61533fa43737aab55';
+	const API_ALEGRA       = 'https://app.alegra.com/api/v1/items';
+	const API_ALEGRA_TAXES = 'https://app.alegra.com/api/v1/taxes';
+	const API_ALEGRA_CATS  = 'https://app.alegra.com/api/v1/categories';
+	const API_ALEGRA_USER  = 'wilmer@pulsejs.io';
+	const API_ALEGRA_KEY   = '52e61533fa43737aab55';
 
 	/**
 	 * @return JsonModel
@@ -211,8 +213,60 @@ class ItemController extends AbstractActionController {
 		return new JsonModel($result);
 	}
 
-	public function taxAction() {
-		return new JsonModel(json_decode('{"success":true,"total": 3,"results":[{"idLocal":"1","idTaxReference":"1","taxReference":"IVA","name":"IVA","tax":"0.00","description":"","verboseName":"IVA (0.00%)","status":"active"},{"idLocal":"2","idTaxReference":"1","taxReference":"IVA","name":"IVA","tax":"5.00","description":"","verboseName":"IVA (5.00%)","status":"active"},{"idLocal":"3","idTaxReference":"1","taxReference":"IVA","name":"IVA","tax":"19.00","description":"","verboseName":"IVA (19.00%)","status":"active"}]}', TRUE));
+	/**
+	 * @return JsonModel
+	 * @throws \Couchbase\Exception
+	 */
+	public function taxesAction() {
+		$response = new Client();
+		$response->setUri(ItemController::API_ALEGRA_TAXES);
+		$response->setAuth(ItemController::API_ALEGRA_USER, ItemController::API_ALEGRA_KEY, Client::AUTH_BASIC);
+		$response->setMethod('GET');
+
+		$response = $response->send();
+		$result   = json_decode($response->getBody(), TRUE);
+
+		$this->getResponse()->setStatusCode($response->getStatusCode());
+
+		if ($response->getStatusCode() == Response::STATUS_CODE_200) {
+			Translate::taxesToEng($result);
+			return new JsonModel([
+				"success" => TRUE,
+				"data"    => $result
+			]);
+		} elseif (isset($result['message'])) {
+			Translate::errorToEng($result);
+		}
+		return new JsonModel($result);
+	}
+
+	/**
+	 * @return JsonModel
+	 * @throws \Couchbase\Exception
+	 */
+	public function categoriesAction() {
+		$response = new Client();
+		$response->setUri(ItemController::API_ALEGRA_CATS);
+		$response->setAuth(ItemController::API_ALEGRA_USER, ItemController::API_ALEGRA_KEY, Client::AUTH_BASIC);
+		$response->setMethod('GET');
+		$response->setParameterGet(["format" => "plain", "type" => "income"]);
+		$response = $response->send();
+		$result   = json_decode($response->getBody(), TRUE);
+
+		$this->getResponse()->setStatusCode($response->getStatusCode());
+
+		if ($response->getStatusCode() == Response::STATUS_CODE_200) {
+			unset($result[0]);
+			$result = array_values($result);
+			Translate::categoriesToEng($result);
+			return new JsonModel([
+				"success" => TRUE,
+				"data"    => $result
+			]);
+		} elseif (isset($result['message'])) {
+			Translate::errorToEng($result);
+		}
+		return new JsonModel($result);
 	}
 
 	private function is_image($Exfit) {

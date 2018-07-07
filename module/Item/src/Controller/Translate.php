@@ -26,6 +26,27 @@ class Translate {
 	}
 
 	/**
+	 * @param $Taxes
+	 */
+	public static function taxesToEng(&$Taxes) {
+		$Translate = new Translate();
+		foreach ($Taxes as $index => $item) {
+			$Translate->toTraslate($Taxes[$index]['description']);
+		}
+	}
+
+	/**
+	 * @param $Cats Object Categories
+	 */
+	public static function categoriesToEng(&$Cats) {
+		$Translate = new Translate();
+		foreach ($Cats as $index => $item) {
+			!empty($Cats[$index]['name']) ? $Translate->toTraslate($Cats[$index]['name']) : NULL;
+			!empty($Cats[$index]['description']) ? $Translate->toTraslate($Cats[$index]['description']) : NULL;
+		}
+	}
+
+	/**
 	 * @param $Struct
 	 * @throws \Couchbase\Exception
 	 */
