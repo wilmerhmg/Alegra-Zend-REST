@@ -25,6 +25,15 @@ class Translate {
 			$Translate->fromObjectES($Struct);
 	}
 
+	/**
+	 * @param $Struct
+	 * @throws \Couchbase\Exception
+	 */
+	public static function toES(&$Struct) {
+		$Translate = new Translate();
+		$Translate->fromObjectEN($Struct);
+	}
+
 	public static function errorToEng(&$Error) {
 		$Translate = new TRanslate();
 		$Translate->toTraslate($Error['message']);
@@ -53,8 +62,27 @@ class Translate {
 		!empty($Object['description']) ? $this->toTraslate($Object['description']) : NULL;
 		!empty($Object['category']) ? $this->toTraslate($Object['category']['name']) : NULL;
 
-		foreach ($Object['price'] as $item => $value)
+		foreach ($Object['price'] as $item => $value) {
+			!empty($Object['price'][$item]['name']) ? $this->toTraslate($Object['price'][$item]['name']) : NULL;
 			$Exch->toUSD($Object['price'][$item]['price']);
+		}
+	}
+
+	/**
+	 * @param $Object
+	 * @throws \Couchbase\Exception
+	 */
+	protected function fromObjectEN(&$Object) {
+		$Exch = new Exchange();
+		$this->toTraslate($Object['name'], 'en', 'es');
+
+		!empty($Object['description']) ? $this->toTraslate($Object['description'], 'en', 'es') : NULL;
+		!empty($Object['category']) ? $this->toTraslate($Object['category']['name'], 'en', 'es') : NULL;
+
+		foreach ($Object['price'] as $item => $value) {
+			!empty($Object['price'][$item]['name']) ? $this->toTraslate($Object['price'][$item]['name']) : NULL;
+			$Exch->toCOP($Object['price'][$item]['price']);
+		}
 	}
 
 	/**
