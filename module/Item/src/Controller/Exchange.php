@@ -32,7 +32,7 @@ class Exchange {
 	}
 
 	public function toUSD(&$value) {
-		$value = $value / $this->rates->COP;
+		$value = round($value / $this->rates->COP, 2);
 	}
 
 	public function toCOP(&$value) {

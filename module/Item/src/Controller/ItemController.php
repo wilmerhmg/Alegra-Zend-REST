@@ -201,10 +201,6 @@ class ItemController extends AbstractActionController {
 		}
 
 		$response->setFileUpload($file, $this->is_image($attachment) ? 'image' : 'file');
-
-		$response->send();
-
-
 		$response = $response->send();
 		$code     = $response->getStatusCode();
 		$result   = json_decode($response->getBody(), TRUE);
