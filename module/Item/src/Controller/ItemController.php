@@ -2,7 +2,6 @@
 
 namespace Item\Controller;
 
-use Zend\Form\Element\File;
 use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Validator\Digits;
@@ -72,10 +71,12 @@ class ItemController extends AbstractActionController {
 		$response = $response->send();
 
 		$result = json_decode($response->getBody(), TRUE);
-		if ($response->getStatusCode() == Response::STATUS_CODE_200)
+		if ($response->getStatusCode() == Response::STATUS_CODE_200) {
 			Translate::toEng($result);
-		elseif (isset($result['message']))
+			$result = ["success" => TRUE, "data" => $result];
+		} elseif (isset($result['message'])) {
 			Translate::errorToEng($result);
+		}
 
 		$this->getResponse()->setStatusCode($response->getStatusCode());
 		return new JsonModel($result);
@@ -86,13 +87,13 @@ class ItemController extends AbstractActionController {
 	 * @throws \Couchbase\Exception
 	 */
 	public function addAction() {
-		$nameValidator  = new StringLength(['min' => 2, 'max' => 150]);
-		$priceValidator = new Digits();
-		$descValidator  = new StringLength(['min' => 0, 'max' => 500]);
+		$nameValidator = new StringLength(['min' => 1, 'max' => 150]);
+		$descValidator = new StringLength(['min' => 0, 'max' => 500]);
+		$rawBody       = $this->getRequest()->getPost()->toArray();
 
-		if (!$nameValidator->isValid($this->params()->fromPost('name')) ||
-			!$priceValidator->isValid($this->params()->fromPost('price')[0]['price']) ||
-			!$descValidator->isValid($this->params()->fromPost('description'))) {
+		if (!$nameValidator->isValid($rawBody['name']) ||
+			!is_numeric($rawBody['price'][0]['price']) ||
+			!$descValidator->isValid($rawBody['description'])) {
 			$this->getResponse()->setStatusCode(400);
 			return new JsonModel(["code" => 400, "message" => "Check all inputs"]);
 		}
@@ -102,8 +103,7 @@ class ItemController extends AbstractActionController {
 		$response->setAuth(ItemController::API_ALEGRA_USER, ItemController::API_ALEGRA_KEY, Client::AUTH_BASIC);
 		$response->setMethod('POST');
 
-		$rawBody = $this->params()->fromPost();
-		$rawBody = array_filter($rawBody, function ($v) { return !empty($v); });
+		$rawBody = $this->clean_array($rawBody);
 		Translate::toES($rawBody);
 
 		$response->setRawBody(json_encode($rawBody));
@@ -126,14 +126,14 @@ class ItemController extends AbstractActionController {
 	 * @throws \Couchbase\Exception
 	 */
 	public function editAction() {
-		$nameValidator  = new StringLength(['min' => 2, 'max' => 150]);
-		$priceValidator = new Digits();
-		$descValidator  = new StringLength(['min' => 1, 'max' => 500]);
-		$idValidator    = new Digits();
-		$id             = $this->params()->fromRoute('id');
-		if (!$nameValidator->isValid($this->params()->fromPost('name')) ||
-			!$priceValidator->isValid($this->params()->fromPost('price')[0]['price']) ||
-			!$descValidator->isValid($this->params()->fromPost('description')) ||
+		$nameValidator = new StringLength(['min' => 1, 'max' => 150]);
+		$descValidator = new StringLength(['min' => 0, 'max' => 500]);
+		$idValidator   = new Digits();
+		$rawBody       = $this->getRequest()->getPost()->toArray();
+		$id            = $this->params()->fromRoute('id');
+		if (!$nameValidator->isValid($rawBody['name']) ||
+			!is_numeric($rawBody['price'][0]['price']) ||
+			!$descValidator->isValid($rawBody['description']) ||
 			!$idValidator->isValid($id)) {
 			$this->getResponse()->setStatusCode(400);
 			return new JsonModel(["code" => 400, "message" => "Check all inputs"]);
@@ -144,19 +144,19 @@ class ItemController extends AbstractActionController {
 		$response->setAuth(ItemController::API_ALEGRA_USER, ItemController::API_ALEGRA_KEY, Client::AUTH_BASIC);
 		$response->setMethod('PUT');
 
-		$rawBody = $this->params()->fromPost();
-
+		$rawBody = $this->clean_array($rawBody);
 		Translate::toES($rawBody);
 
 		$response->setRawBody(json_encode($rawBody));
 		$response = $response->send();
 
 		$result = json_decode($response->getBody(), TRUE);
-		if ($response->getStatusCode() == Response::STATUS_CODE_200)
+		if ($response->getStatusCode() == Response::STATUS_CODE_200) {
 			Translate::toEng($result);
-		elseif (isset($result['message']))
+			$this->attachAction($result['id']);
+		} elseif (isset($result['message'])) {
 			Translate::errorToEng($result);
-
+		}
 		$this->getResponse()->setStatusCode($response->getStatusCode());
 		return new JsonModel($result);
 	}
@@ -275,5 +275,15 @@ class ItemController extends AbstractActionController {
 
 	private function is_image($Exfit) {
 		return (strpos($Exfit['type'], 'image') !== FALSE);
+	}
+
+	private function clean_array($array) {
+		$array = array_filter($array, function ($v) { return !empty($v); });
+		foreach ($array as $index => $value) {
+			if (is_array($value)) {
+				$array[$index] = $this->clean_array($value);
+			}
+		}
+		return array_filter($array, function ($v) { return !empty($v); });
 	}
 }
