@@ -1,8 +1,10 @@
+@import "compass/css3";
+
 @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700|Dosis:200,400,600);
+
 body {
   background-color: #252527;
 }
-
 h1 {
   font-family: Dosis;
   font-weight: 200;
@@ -10,7 +12,7 @@ h1 {
   text-align: center;
   display: block;
   color: #fff;
-  top: 40%;
+  top: 50%;
   width: 100%;
   margin-top: -55px;
   text-transform: uppercase;
@@ -18,34 +20,19 @@ h1 {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0,0,0);
+  -moz-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
   opacity: 0;
   -webkit-animation: anim 3.2s ease-out forwards 1s;
   animation: anim 3.2s ease-out forwards 1s;
 }
-
 strong {
   display: block;
   font-weight: 400;
 }
-a{
-  text-decoration: none;
-}
 
-a:link {
-  color: #fff;
-}
-a:visited {
-  color: #fff;
-}
-a:hover {
-  color: green;
-}
-a:active {
-  color: #fff;
-}
+
 @-webkit-keyframes anim {
   0% {
     text-shadow: 0 0 50px #fff;
@@ -69,6 +56,7 @@ a:active {
     letter-spacing: 8px;
     -webkit-transform: rotateY(0deg) translateZ(100px);
   }
+
 }
 @keyframes anim {
   0% {
@@ -93,4 +81,5 @@ a:active {
     letter-spacing: 8px;
     -moz-transform: rotateY(0deg) translateZ(100px);
   }
+
 }
