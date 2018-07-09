@@ -39,10 +39,13 @@ class ItemController extends AbstractActionController {
 
 		$result = json_decode($response->getBody(), TRUE);
 
-		if ($response->getStatusCode() == Response::STATUS_CODE_200)
+		if ($response->getStatusCode() == Response::STATUS_CODE_200) {
+			$result['total']   = $result['metadata']['total'];
+			$result['success'] = TRUE;
 			Translate::toEng($result['data']);
-		elseif (isset($result['message']))
+		} elseif (isset($result['message'])) {
 			Translate::errorToEng($result);
+		}
 
 		$this->getResponse()->setStatusCode($response->getStatusCode());
 
@@ -85,7 +88,7 @@ class ItemController extends AbstractActionController {
 	public function addAction() {
 		$nameValidator  = new StringLength(['min' => 2, 'max' => 150]);
 		$priceValidator = new Digits();
-		$descValidator  = new StringLength(['min' => 1, 'max' => 500]);
+		$descValidator  = new StringLength(['min' => 0, 'max' => 500]);
 
 		if (!$nameValidator->isValid($this->params()->fromPost('name')) ||
 			!$priceValidator->isValid($this->params()->fromPost('price')[0]['price']) ||
@@ -100,17 +103,19 @@ class ItemController extends AbstractActionController {
 		$response->setMethod('POST');
 
 		$rawBody = $this->params()->fromPost();
-
+		$rawBody = array_filter($rawBody, function ($v) { return !empty($v); });
 		Translate::toES($rawBody);
 
 		$response->setRawBody(json_encode($rawBody));
 		$response = $response->send();
 
 		$result = json_decode($response->getBody(), TRUE);
-		if ($response->getStatusCode() == Response::STATUS_CODE_201)
+		if ($response->getStatusCode() == Response::STATUS_CODE_201) {
 			Translate::toEng($result);
-		elseif (isset($result['message']))
+			$this->attachAction($result['id']);
+		} elseif (isset($result['message'])) {
 			Translate::errorToEng($result);
+		}
 
 		$this->getResponse()->setStatusCode($response->getStatusCode());
 		return new JsonModel($result);
@@ -178,9 +183,9 @@ class ItemController extends AbstractActionController {
 	/**
 	 * @return JsonModel
 	 */
-	public function attachAction() {
+	public function attachAction($id = NULL) {
 		$response   = new Client();
-		$id         = $this->params()->fromRoute('id');
+		$id         = $this->params()->fromRoute('id', $id);
 		$attachment = $this->params()->fromFiles('attachment');
 		$path       = './uploads/';
 		$rename     = hash('SHA1', date('Ymd') . microtime());
@@ -194,7 +199,6 @@ class ItemController extends AbstractActionController {
 			$this->getResponse()->setStatusCode(400);
 			return new JsonModel(["code" => 400, "message" => "File is required"]);
 		}
-
 
 		$response->setFileUpload($file, $this->is_image($attachment) ? 'image' : 'file');
 
@@ -270,10 +274,6 @@ class ItemController extends AbstractActionController {
 	}
 
 	private function is_image($Exfit) {
-		$image_type = $Exfit['type'];
-		if (in_array($image_type, array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP))) {
-			return TRUE;
-		}
-		return FALSE;
+		return (strpos($Exfit['type'], 'image') !== FALSE);
 	}
 }

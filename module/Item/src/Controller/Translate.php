@@ -98,7 +98,7 @@ class Translate {
 		$this->toTraslate($Object['name'], 'en', 'es');
 
 		!empty($Object['description']) ? $this->toTraslate($Object['description'], 'en', 'es') : NULL;
-		!empty($Object['category']) ? $this->toTraslate($Object['category']['name'], 'en', 'es') : NULL;
+		!empty($Object['category']['name']) ? $this->toTraslate($Object['category']['name'], 'en', 'es') : NULL;
 
 		foreach ($Object['price'] as $item => $value) {
 			!empty($Object['price'][$item]['name']) ? $this->toTraslate($Object['price'][$item]['name']) : NULL;
